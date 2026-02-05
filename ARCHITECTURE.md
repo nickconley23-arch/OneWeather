@@ -7,8 +7,16 @@ OneWeather is an accuracy-first weather intelligence platform that blends multip
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Client Applications                      │
-│  (Web, Mobile, API Consumers - Future Phase)                │
+│                    Client Applications                       │
+│  ┌─────────────────┐  ┌─────────────────┐                   │
+│  │   1news.co      │  │   iOS Mobile    │                   │
+│  │  Integration    │  │     App         │                   │
+│  │  (Dark Sky-like)│  │  (SwiftUI)      │                   │
+│  └─────────────────┘  └─────────────────┘                   │
+│  ┌─────────────────┐  ┌─────────────────┐                   │
+│  │  Public API     │  │  Admin Dashboard│                   │
+│  │  Consumers      │  │  (Internal)     │                   │
+│  └─────────────────┘  └─────────────────┘                   │
 └──────────────────────────┬──────────────────────────────────┘
                            │ HTTPS/JSON
 ┌──────────────────────────▼──────────────────────────────────┐
@@ -17,6 +25,8 @@ OneWeather is an accuracy-first weather intelligence platform that blends multip
 │  • Authentication & Rate Limiting                           │
 │  • Request Routing & Validation                             │
 │  • Response Caching (Redis)                                 │
+│  • Mobile-optimized endpoints                               │
+│  • Web-optimized endpoints                                  │
 └──────────────────────────┬──────────────────────────────────┘
                            │ Internal API Calls
 ┌──────────────────────────▼──────────────────────────────────┐

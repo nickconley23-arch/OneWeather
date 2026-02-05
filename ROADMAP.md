@@ -64,20 +64,39 @@ Build an accuracy-first weather intelligence platform that dynamically determine
 - [ ] **Senior Dev**: Caching and performance optimization
 - [ ] **Team**: Phase 2 completion review
 
-## Phase 3: Expansion (Weeks 9-12)
-**Goal**: Expand geographic coverage, add variables, and prepare for production.
+## Phase 3: Frontend Integration (Weeks 9-12)
+**Goal**: Build frontend compatible with 1news.co integration and prepare for iOS mobile app.
 
-### Week 9-10: Geographic Expansion
+### Week 9-10: 1news.co Integration & Web Frontend
+- [ ] **Frontend Engineer**: [New hire] Design Dark Sky-like web interface
+- [ ] **Frontend Engineer**: Integration with 1news.co domain and styling
+- [ ] **Senior Dev**: Public API endpoints for frontend consumption
+- [ ] **Senior Dev**: Caching layer for high-traffic web access
+- [ ] **Team**: First integration test with 1news.co
+
+### Week 11-12: iOS App Foundation
+- [ ] **iOS Engineer**: [New hire] SwiftUI app skeleton
+- [ ] **iOS Engineer**: Core weather display components
+- [ ] **Senior Dev**: Mobile-optimized API endpoints
+- [ ] **Senior Dev**: Push notification infrastructure for alerts
+- [ ] **Team**: Basic iOS app prototype
+
+## Phase 4: Expansion & Mobile (Weeks 13-16)
+**Goal**: Expand geographic coverage, add variables, and complete mobile app.
+
+### Week 13-14: Geographic Expansion
 - [ ] **Data Engineer**: Global data ingestion (beyond CONUS)
-- [ ] **Data Engineer**: Additional forecast variables (precipitation, wind)
-- [ ] **Senior Dev**: Scalability improvements
-- [ ] **Team**: Global coverage assessment
+- [ ] **Data Engineer**: Additional forecast variables (precipitation, wind, humidity)
+- [ ] **Senior Dev**: Scalability improvements for global coverage
+- [ ] **Team**: Global coverage assessment and performance testing
 
-### Week 11-12: Production Preparation
+### Week 15-16: iOS App Completion & Production
+- [ ] **iOS Engineer**: Complete Dark Sky-like iOS interface
+- [ ] **iOS Engineer**: Location services, maps integration
 - [ ] **DevOps**: [New hire] AWS migration planning
-- [ ] **DevOps**: High-availability deployment
-- [ ] **Senior Dev**: Security audit and hardening
-- [ ] **Team**: Production readiness review
+- [ ] **DevOps**: High-availability deployment for mobile traffic
+- [ ] **Senior Dev**: Security audit and mobile API hardening
+- [ ] **Team**: Production readiness review for web and mobile
 
 ## Technical Stack Decisions
 
@@ -141,9 +160,10 @@ Build an accuracy-first weather intelligence platform that dynamically determine
 
 ### Future Hiring Plan:
 - **Week 5**: ML Scientist (Phase 2)
-- **Week 9**: DevOps Engineer (Phase 3)
-- **Week 13**: Frontend Engineer (UI development)
-- **Week 17**: Additional Data Engineer (scale)
+- **Week 9**: Frontend Engineer (1news.co integration)
+- **Week 11**: iOS Engineer (Mobile app development)
+- **Week 15**: DevOps Engineer (Production scaling)
+- **Week 17**: Additional Data Engineer (Global expansion)
 
 ## Communication Plan
 

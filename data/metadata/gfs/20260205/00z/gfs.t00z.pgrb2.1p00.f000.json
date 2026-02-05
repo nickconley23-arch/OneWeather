@@ -1,0 +1,19 @@
+{
+  "source": "gfs",
+  "date": "20260205",
+  "cycle": "00",
+  "forecast_hour": 0,
+  "resolution": "1p00",
+  "filename": "gfs.t00z.pgrb2.1p00.f000",
+  "download_time": "2026-02-05T23:45:53.058050Z",
+  "file_size": 41724751,
+  "checksum_sha256": "02e8856413af92458424b305cc63e7a15e2e6384e4a3d9e2a263fae03d3db2e3",
+  "url": "https://nomads.ncep.noaa.gov/pub/data/nccf/com/gfs/prod/gfs.20260205/00/atmos/gfs.t00z.pgrb2.1p00.f000",
+  "grib_metadata": {
+    "file_size": 41724751,
+    "variables": [],
+    "levels": [],
+    "grid_info": {}
+  },
+  "status": "ingested"
+}
