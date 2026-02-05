@@ -1,0 +1,11 @@
+# Requirements for GFS ingestion proof-of-concept
+requests>=2.28.0
+cfgrib>=0.9.10
+xarray>=2023.1.0
+netCDF4>=1.6.0
+# Optional: pygrib for advanced GRIB2 handling
+# pygrib>=2.1
+
+# For testing
+pytest>=7.0.0
+pytest-mock>=3.10.0
