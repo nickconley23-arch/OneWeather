@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # Development API with hot reload
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - RELOAD=true
+    volumes:
+      - ./api:/app
+      - ./data:/data
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+  
+  # Development ingestion service
+  ingestion:
+    build:
+      context: ./ingestion
+      dockerfile: Dockerfile
+    environment:
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+    volumes:
+      - ./ingestion:/app
+      - ./data:/data
+      - ingestion_python_cache:/app/__pycache__
+    command: tail -f /dev/null  # Keep container running for development
+  
+  # Development database with sample data
+  db:
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/sample_data.sql:/docker-entrypoint-initdb.d/sample_data.sql
+  
+  # Development tools
+  dev-tools:
+    image: python:3.11-slim
+    volumes:
+      - ./:/workspace
+    working_dir: /workspace
+    command: tail -f /dev/null
+
+volumes:
+  ingestion_python_cache:
