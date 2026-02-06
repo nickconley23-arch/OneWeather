@@ -17,12 +17,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY . .
 
-# Create non-root user
-RUN useradd -m -u 1000 weatheruser && chown -R weatheruser:weatheruser /app
-USER weatheruser
+# Create data directory first (as root)
+RUN mkdir -p /data/raw /data/processed /data/metadata && chmod 777 /data
 
-# Create data directory
-RUN mkdir -p /data/raw /data/processed /data/metadata
+# Create non-root user
+RUN useradd -m -u 1000 weatheruser && chown -R weatheruser:weatheruser /app /data
+USER weatheruser
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
