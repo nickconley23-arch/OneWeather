@@ -39,8 +39,8 @@ class OneWeatherDashboard {
         try {
             this.showLoading(true);
             
-            // REAL API call - will fail until backend is running
-            const response = await fetch(`${API_BASE_URL}/api/v1/forecast/${ARDMORE_COORDS.lat}/${ARDMORE_COORDS.lon}?hours=24&include_sources=true`);
+            // REAL API call - using simple forecast endpoint
+            const response = await fetch(`${API_BASE_URL}/api/v1/forecast/${ARDMORE_COORDS.lat}/${ARDMORE_COORDS.lon}?hours=24`);
             
             if (!response.ok) {
                 throw new Error(`API error: ${response.status}`);
@@ -53,7 +53,7 @@ class OneWeatherDashboard {
             
         } catch (error) {
             console.error('Error loading forecast:', error);
-            this.showError('Backend API not running. Start with: docker-compose up -d');
+            this.showError('Backend API not running. Start with: cd /home/ubuntu/OneWeather/api && python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000');
             this.showLoading(false);
             
             // Show connection instructions

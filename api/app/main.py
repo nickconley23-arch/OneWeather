@@ -10,7 +10,7 @@ import logging
 
 from app.core.config import settings
 # from app.core.database import engine, Base  # Disabled for Phase 1
-from app.routers import health, forecast
+from app.routers import health, simple_forecast
 
 # Configure logging
 logging.basicConfig(
@@ -63,7 +63,7 @@ if settings.CORS_ORIGINS:
 
 # Include routers
 app.include_router(health.router, prefix="/health", tags=["health"])
-app.include_router(forecast.router, prefix="/api/v1/forecast", tags=["forecast"])
+app.include_router(simple_forecast.router, prefix="/api/v1/forecast", tags=["forecast"])
 
 
 @app.get("/")
