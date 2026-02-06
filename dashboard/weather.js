@@ -8,7 +8,7 @@ const ARDMORE_COORDS = {
     lon: -75.2923
 };
 
-const API_BASE_URL = 'http://localhost:8000'; // Change to production URL when deployed
+const API_BASE_URL = 'http://localhost:8000'; // Local FastAPI backend
 
 // Weather icon mapping
 const WEATHER_ICONS = {
@@ -39,65 +39,54 @@ class OneWeatherDashboard {
         try {
             this.showLoading(true);
             
-            // For now, use mock data until API is ready
-            // TODO: Replace with real API call
-            // const response = await fetch(`${API_BASE_URL}/api/v1/forecast/${ARDMORE_COORDS.lat}/${ARDMORE_COORDS.lon}?hours=24`);
-            // this.forecastData = await response.json();
+            // REAL API call - will fail until backend is running
+            const response = await fetch(`${API_BASE_URL}/api/v1/forecast/${ARDMORE_COORDS.lat}/${ARDMORE_COORDS.lon}?hours=24&include_sources=true`);
             
-            // Using mock data for now
-            this.forecastData = this.generateMockData();
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status}`);
+            }
+            
+            this.forecastData = await response.json();
             
             this.renderDashboard();
             this.showLoading(false);
             
         } catch (error) {
             console.error('Error loading forecast:', error);
-            this.showError('Failed to load forecast data');
+            this.showError('Backend API not running. Start with: docker-compose up -d');
             this.showLoading(false);
+            
+            // Show connection instructions
+            this.showConnectionInstructions();
         }
     }
     
-    generateMockData() {
-        const now = new Date();
-        const points = [];
+    showConnectionInstructions() {
+        const container = document.querySelector('.hourly-scroll');
+        if (!container) return;
         
-        // Generate 24 hours of mock data
-        for (let i = 0; i < 24; i++) {
-            const time = new Date(now.getTime() + i * 60 * 60 * 1000);
-            const hour = time.getHours();
-            
-            // Simulate daily temperature curve
-            const baseTemp = 20; // 20°C average
-            const tempVariation = 8 * Math.sin((hour - 14) * Math.PI / 12); // Peak at 2 PM
-            const temperature = baseTemp + tempVariation + (Math.random() - 0.5) * 2;
-            
-            // Simulate precipitation (higher chance in afternoon)
-            const precipChance = hour >= 14 && hour <= 18 ? 0.3 : 0.1;
-            const precipitation = Math.random() < precipChance ? (Math.random() * 5) : 0;
-            
-            points.push({
-                timestamp: time.toISOString(),
-                temperature_c: Math.round(temperature * 10) / 10,
-                precipitation_mm: Math.round(precipitation * 10) / 10,
-                precipitation_probability: precipChance,
-                wind_speed_mps: Math.round((3 + Math.random() * 5) * 10) / 10,
-                wind_direction_deg: Math.round(Math.random() * 360),
-                humidity_percent: Math.round(50 + Math.random() * 30),
-                cloud_cover_percent: Math.round(Math.random() * 100),
-                pressure_hpa: Math.round(1013 + (Math.random() - 0.5) * 10),
-                source: 'blended'
-            });
-        }
+        container.innerHTML = '';
         
-        return {
-            latitude: ARDMORE_COORDS.lat,
-            longitude: ARDMORE_COORDS.lon,
-            forecast_hours: 24,
-            generated_at: now.toISOString(),
-            points: points,
-            sources_used: ['openmeteo_gfs', 'openmeteo_ecmwf', 'noaa_weathergov'],
-            blending_method: 'simple_average'
-        };
+        const instructionCard = document.createElement('div');
+        instructionCard.className = 'flex-shrink-0 w-full glass-card rounded-2xl p-6 text-center';
+        instructionCard.innerHTML = `
+            <i class="fas fa-plug text-4xl text-blue-400 mb-4"></i>
+            <h3 class="text-xl font-light mb-2">Backend Not Connected</h3>
+            <p class="text-gray-400 mb-4">The weather API backend needs to be started.</p>
+            <div class="bg-gray-800 rounded-lg p-4 text-left font-mono text-sm">
+                <code class="text-green-400">cd /home/ubuntu/OneWeather</code><br>
+                <code class="text-green-400">docker-compose up -d</code><br>
+                <code class="text-gray-500"># Then refresh this page</code>
+            </div>
+        `;
+        
+        container.appendChild(instructionCard);
+        
+        // Update other UI elements to show connection needed
+        document.getElementById('currentTemp').textContent = '--°';
+        document.getElementById('currentCondition').textContent = 'API Offline';
+        document.getElementById('feelsLike').textContent = 'Start backend';
+        document.getElementById('weatherIcon').className = 'fas fa-plug text-6xl text-gray-500';
     }
     
     renderDashboard() {

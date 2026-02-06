@@ -242,6 +242,38 @@ class NOAAWeatherGovSource(WeatherSource):
         return None
 
 
+class WeatherAPISource(WeatherSource):
+    """WeatherAPI.com Free Tier (1M calls/month)"""
+    
+    def __init__(self):
+        super().__init__("weatherapi", cache_ttl=300)
+        self.base_url = "http://api.weatherapi.com/v1"
+        # Note: Requires free API key from weatherapi.com
+    
+    async def get_forecast(self, latitude: float, longitude: float) -> List[ForecastPoint]:
+        """Get forecast from WeatherAPI.com"""
+        # Placeholder - needs API key
+        # Free tier: 1M calls/month, 3-day forecast
+        logger.info("WeatherAPI.com requires free API key registration")
+        return []
+
+
+class OpenWeatherMapSource(WeatherSource):
+    """OpenWeatherMap Free Tier (1K calls/day)"""
+    
+    def __init__(self):
+        super().__init__("openweathermap", cache_ttl=300)
+        self.base_url = "https://api.openweathermap.org/data/2.5"
+        # Note: Requires free API key from openweathermap.org
+    
+    async def get_forecast(self, latitude: float, longitude: float) -> List[ForecastPoint]:
+        """Get forecast from OpenWeatherMap"""
+        # Placeholder - needs API key
+        # Free tier: 1,000 calls/day, current weather + 5-day forecast
+        logger.info("OpenWeatherMap requires free API key registration")
+        return []
+
+
 class MeteomaticsFreeSource(WeatherSource):
     """Meteomatics Free Tier API"""
     
@@ -252,8 +284,7 @@ class MeteomaticsFreeSource(WeatherSource):
     
     async def get_forecast(self, latitude: float, longitude: float) -> List[ForecastPoint]:
         """Get forecast from Meteomatics (placeholder - needs API key)"""
-        # This is a placeholder - would need API key registration
-        logger.info("Meteomatics requires API key registration - skipping for now")
+        logger.info("Meteomatics requires API key registration")
         return []
 
 
@@ -264,8 +295,13 @@ class WeatherSourceManager:
         self.sources = {
             "openmeteo": OpenMeteoSource(),
             "noaa_weathergov": NOAAWeatherGovSource(),
+            # "weatherapi": WeatherAPISource(),  # Needs free API key
+            # "openweathermap": OpenWeatherMapSource(),  # Needs free API key
             # "meteomatics": MeteomaticsFreeSource(),  # Needs API key
         }
+        
+        # Track which sources are actually working (have API keys)
+        self.active_sources = ["openmeteo", "noaa_weathergov"]
     
     async def get_all_forecasts(self, latitude: float, longitude: float) -> Dict[str, List[ForecastPoint]]:
         """Get forecasts from all available sources"""
