@@ -64,7 +64,7 @@ if settings.CORS_ORIGINS:
 # Include routers
 app.include_router(health.router, prefix="/health", tags=["health"])
 app.include_router(forecast.router, prefix="/api/v1/forecast", tags=["forecast"])
-app.include_router(admin.router, prefix="/api/v1/admin", tags=["admin"])
+# app.include_router(admin.router, prefix="/api/v1/admin", tags=["admin"])  # TODO: Implement admin endpoints
 
 
 @app.get("/")

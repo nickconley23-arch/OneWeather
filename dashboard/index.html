@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OneWeather • Ardmore, PA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Apple-style glass morphism */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Tesla-style smooth transitions */
+        .transition-smooth {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Dark Sky inspired scroll */
+        .hourly-scroll {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .hourly-scroll::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* Weather icon animations */
+        .weather-icon {
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+        }
+        
+        /* Gradient text (Apple style) */
+        .gradient-text {
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Loading shimmer */
+        .shimmer {
+            background: linear-gradient(90deg, 
+                rgba(255, 255, 255, 0) 0%, 
+                rgba(255, 255, 255, 0.1) 50%, 
+                rgba(255, 255, 255, 0) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Main Container -->
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        
+        <!-- Apple-style Header -->
+        <header class="mb-10 text-center">
+            <div class="flex items-center justify-center gap-3 mb-2">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                    <i class="fas fa-cloud text-white text-lg"></i>
+                </div>
+                <h1 class="text-3xl font-light tracking-tight">OneWeather</h1>
+            </div>
+            <p class="text-gray-400 text-sm">Intelligently blended forecasts • Ardmore, PA</p>
+        </header>
+        
+        <!-- Hero Forecast Card (Dark Sky style) -->
+        <div class="glass-card rounded-3xl p-8 mb-8">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <!-- Location & Current Temp -->
+                <div class="text-center md:text-left mb-6 md:mb-0">
+                    <h2 class="text-2xl font-light text-gray-300 mb-1">Ardmore, Pennsylvania</h2>
+                    <div class="flex items-baseline justify-center md:justify-start gap-2">
+                        <div class="text-7xl font-thin gradient-text" id="currentTemp">--°</div>
+                        <div class="text-gray-400">
+                            <div class="text-xl" id="currentCondition">Loading...</div>
+                            <div class="text-sm" id="feelsLike">Feels like --°</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Large Weather Icon -->
+                <div class="weather-icon">
+                    <i class="fas fa-sun text-6xl text-yellow-300" id="weatherIcon"></i>
+                </div>
+            </div>
+            
+            <!-- Source Attribution (Subtle) -->
+            <div class="mt-6 pt-6 border-t border-gray-800">
+                <p class="text-xs text-gray-500 text-center">
+                    <i class="fas fa-brain mr-1"></i>
+                    Blended from <span id="sourceCount">multiple</span> forecast models
+                    <span class="mx-2">•</span>
+                    <span id="updateTime">Updating...</span>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Hourly Forecast (Dark Sky horizontal scroll) -->
+        <div class="mb-8">
+            <h3 class="text-lg font-medium text-gray-300 mb-4 flex items-center">
+                <i class="fas fa-clock mr-2 text-blue-400"></i>
+                HOURLY FORECAST
+            </h3>
+            <div class="hourly-scroll flex overflow-x-auto pb-4 gap-4">
+                <!-- Dynamic hourly cards will be inserted here -->
+                <div class="flex-shrink-0 w-20 glass-card rounded-2xl p-4 text-center shimmer" style="height: 120px;"></div>
+                <div class="flex-shrink-0 w-20 glass-card rounded-2xl p-4 text-center shimmer" style="height: 120px;"></div>
+                <div class="flex-shrink-0 w-20 glass-card rounded-2xl p-4 text-center shimmer" style="height: 120px;"></div>
+                <div class="flex-shrink-0 w-20 glasscard rounded-2xl p-4 text-center shimmer" style="height: 120px;"></div>
+            </div>
+        </div>
+        
+        <!-- Metrics Grid (Tesla-style cards) -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <!-- Precipitation -->
+            <div class="glass-card rounded-2xl p-5 transition-smooth hover:scale-[1.02]">
+                <div class="flex items-center justify-between mb-3">
+                    <i class="fas fa-tint text-blue-400 text-xl"></i>
+                    <span class="text-xs text-gray-400">PRECIPITATION</span>
+                </div>
+                <div class="text-3xl font-light" id="precipitation">--%</div>
+                <div class="text-sm text-gray-400 mt-1" id="precipitationAmount">-- mm</div>
+            </div>
+            
+            <!-- Wind -->
+            <div class="glass-card rounded-2xl p-5 transition-smooth hover:scale-[1.02]">
+                <div class="flex items-center justify-between mb-3">
+                    <i class="fas fa-wind text-green-400 text-xl"></i>
+                    <span class="text-xs text-gray-400">WIND</span>
+                </div>
+                <div class="text-3xl font-light" id="windSpeed">--</div>
+                <div class="text-sm text-gray-400 mt-1" id="windDirection">-- direction</div>
+            </div>
+            
+            <!-- Humidity -->
+            <div class="glass-card rounded-2xl p-5 transition-smooth hover:scale-[1.02]">
+                <div class="flex items-center justify-between mb-3">
+                    <i class="fas fa-droplet text-cyan-400 text-xl"></i>
+                    <span class="text-xs text-gray-400">HUMIDITY</span>
+                </div>
+                <div class="text-3xl font-light" id="humidity">--%</div>
+                <div class="text-sm text-gray-400 mt-1">Comfort level</div>
+            </div>
+            
+            <!-- Pressure -->
+            <div class="glass-card rounded-2xl p-5 transition-smooth hover:scale-[1.02]">
+                <div class="flex items-center justify-between mb-3">
+                    <i class="fas fa-gauge-high text-purple-400 text-xl"></i>
+                    <span class="text-xs text-gray-400">PRESSURE</span>
+                </div>
+                <div class="text-3xl font-light" id="pressure">--</div>
+                <div class="text-sm text-gray-400 mt-1">hPa</div>
+            </div>
+        </div>
+        
+        <!-- Accuracy & Sources Panel -->
+        <div class="glass-card rounded-2xl p-6 mb-8">
+            <h3 class="text-lg font-medium text-gray-300 mb-4 flex items-center">
+                <i class="fas fa-chart-line mr-2 text-green-400"></i>
+                FORECAST INTELLIGENCE
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Source Breakdown -->
+                <div>
+                    <h4 class="text-sm font-medium text-gray-400 mb-3">Sources Used</h4>
+                    <div class="space-y-3" id="sourceList">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-3 h-3 rounded-full bg-blue-500 mr-3"></div>
+                                <span class="text-sm">Open-Meteo</span>
+                            </div>
+                            <span class="text-gray-400 text-sm">33%</span>
+                        </div>
+                        <!-- More sources will be added dynamically -->
+                    </div>
+                </div>
+                
+                <!-- Accuracy Metrics -->
+                <div>
+                    <h4 class="text-sm font-medium text-gray-400 mb-3">Performance</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span>Current Accuracy</span>
+                                <span id="accuracyScore">--%</span>
+                            </div>
+                            <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full" 
+                                     id="accuracyBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Blending multiple models improves accuracy by <span id="improvement">--%</span> vs single sources
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="text-center text-gray-500 text-sm pt-8 border-t border-gray-900">
+            <p class="mb-2">
+                <i class="fas fa-bolt text-yellow-400 mr-1"></i>
+                OneWeather • Intelligently blended forecasts
+            </p>
+            <p class="text-xs">
+                Data updates hourly • Ardmore, PA (40.0048, -75.2923) •
+                <a href="#" class="text-blue-400 hover:text-blue-300 transition-smooth" id="refreshBtn">
+                    <i class="fas fa-sync-alt mr-1"></i>Refresh
+                </a>
+            </p>
+        </footer>
+        
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="fixed inset-0 bg-gray-900 bg-opacity-90 flex items-center justify-center z-50 transition-opacity">
+            <div class="text-center">
+                <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p class="text-xl font-light">Loading intelligent forecast...</p>
+                <p class="text-gray-400 mt-2">Blending multiple data sources</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script src="weather.js"></script>
+    <script>
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide loading after a moment (will be replaced with real API call)
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                }, 300);
+            }, 1500);
+            
+            // Refresh button
+            document.getElementById('refreshBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('loadingOverlay').style.display = 'flex';
+                document.getElementById('loadingOverlay').style.opacity = '1';
+                setTimeout(() => {
+                    document.getElementById('loadingOverlay').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('loadingOverlay').style.display = 'none';
+                    }, 300);
+                }, 1000);
+            });
+        });
+    </script>
+</body>
+</html>
