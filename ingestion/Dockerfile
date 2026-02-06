@@ -2,34 +2,17 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies including wgrib2
+# Install system dependencies for cfgrib
 RUN apt-get update && apt-get install -y \
     curl \
-    wget \
     gcc \
     g++ \
     libeccodes-dev \
-    libeccodes-tools \
-    && wget -q -O /tmp/wgrib2.deb https://www.ftp.cpc.ncep.noaa.gov/wd51we/wgrib2/wgrib2.tgz.v3.1.1.deb \
-    && dpkg -i /tmp/wgrib2.deb || apt-get install -f -y \
-    && rm -rf /var/lib/apt/lists/* /tmp/*
-
-# Verify wgrib2 installation
-RUN which wgrib2 && wgrib2 --version
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Install additional weather data libraries
-RUN pip install --no-cache-dir \
-    cfgrib \
-    xarray \
-    netcdf4 \
-    h3-py \
-    pyarrow \
-    pandas \
-    numpy
 
 # Copy application code
 COPY . .

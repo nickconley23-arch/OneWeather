@@ -188,7 +188,7 @@ class GFSIngestor:
     
     def extract_grib_metadata(self, grib_path: Path) -> Dict:
         """
-        Extract basic metadata from GRIB2 file using wgrib2
+        Extract basic metadata from GRIB2 file using cfgrib
         
         Args:
             grib_path: Path to GRIB2 file
@@ -204,55 +204,51 @@ class GFSIngestor:
         }
         
         try:
-            # Use wgrib2 to inspect the file
-            # First, get inventory of messages
-            cmd = ["wgrib2", str(grib_path)]
-            result = subprocess.run(cmd, capture_output=True, text=True)
+            # Try to use cfgrib for metadata extraction
+            import cfgrib
             
-            if result.returncode == 0:
-                lines = result.stdout.strip().split('\n')
-                metadata["message_count"] = len(lines)
-                
-                # Extract unique variables and levels
-                variables = set()
-                levels = set()
-                
-                for line in lines:
-                    # Parse wgrib2 output format
-                    parts = line.split(':')
-                    if len(parts) > 3:
-                        var_info = parts[3]
-                        # Extract variable name (simplified)
-                        if ':' in var_info:
-                            var_name = var_info.split(':')[0]
-                            variables.add(var_name)
-                        
-                        # Extract level information
-                        if len(parts) > 4:
-                            level_info = parts[4]
-                            levels.add(level_info)
-                
-                metadata["variables"] = sorted(list(variables))
-                metadata["levels"] = sorted(list(levels))
-                
-                # Get grid information
-                cmd_grid = ["wgrib2", str(grib_path), "-grid"]
-                result_grid = subprocess.run(cmd_grid, capture_output=True, text=True)
-                
-                if result_grid.returncode == 0 and result_grid.stdout:
-                    # Parse grid information
-                    grid_lines = result_grid.stdout.strip().split('\n')
-                    if grid_lines:
-                        metadata["grid_info"] = {"description": grid_lines[0]}
+            # Open the GRIB file and get metadata
+            datasets = cfgrib.open_datasets(str(grib_path))
             
-            else:
-                logger.warning(f"wgrib2 failed: {result.stderr}")
+            if datasets:
+                # Get metadata from first dataset
+                ds = datasets[0]
+                metadata["message_count"] = len(datasets)
                 
-        except FileNotFoundError:
-            logger.warning("wgrib2 not found in PATH. Install with: "
-                          "apt-get install wgrib2 or conda install -c conda-forge wgrib2")
+                # Extract variables
+                if hasattr(ds, 'data_vars'):
+                    variables = list(ds.data_vars.keys())
+                    metadata["variables"] = variables
+                
+                # Extract dimensions
+                if hasattr(ds, 'dims'):
+                    metadata["dimensions"] = dict(ds.dims)
+                
+                # Extract grid information
+                if hasattr(ds, 'attrs'):
+                    metadata["grid_info"] = ds.attrs
+                
+                # Extract available levels
+                if 'heightAboveGround' in ds.coords:
+                    levels = ds.coords['heightAboveGround'].values.tolist()
+                    metadata["levels"] = levels
+                elif 'isobaricInhPa' in ds.coords:
+                    levels = ds.coords['isobaricInhPa'].values.tolist()
+                    metadata["levels"] = levels
+                    
+                logger.info(f"Extracted metadata using cfgrib: {len(variables)} variables")
+                
+        except ImportError:
+            logger.warning("cfgrib not installed. Install with: pip install cfgrib")
+            # Fallback: try to parse with basic file inspection
+            metadata["variables"] = ["unknown"]
+            metadata["levels"] = ["unknown"]
+            
         except Exception as e:
-            logger.warning(f"Error extracting GRIB metadata: {e}")
+            logger.warning(f"Error extracting GRIB metadata with cfgrib: {e}")
+            # Fallback to basic file info
+            metadata["variables"] = ["unknown"]
+            metadata["levels"] = ["unknown"]
         
         return metadata
     
