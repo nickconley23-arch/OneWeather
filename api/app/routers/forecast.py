@@ -2,7 +2,7 @@
 Forecast API endpoints
 """
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Path
 from typing import List, Optional
 from datetime import datetime, timedelta
 import logging
@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 
 @router.get("/{latitude}/{longitude}", response_model=ForecastResponse)
 async def get_forecast(
-    latitude: float = Query(..., ge=-90, le=90, description="Latitude"),
-    longitude: float = Query(..., ge=-180, le=180, description="Longitude"),
+    latitude: float = Path(..., ge=-90, le=90, description="Latitude"),
+    longitude: float = Path(..., ge=-180, le=180, description="Longitude"),
     hours: Optional[int] = Query(24, ge=1, le=168, description="Hours of forecast to return"),
     include_sources: Optional[bool] = Query(False, description="Include individual source forecasts"),
 ):
@@ -42,12 +42,8 @@ async def get_forecast(
         # Blend forecasts
         blended_forecast = weather_manager.blend_forecasts(source_forecasts)
         
-        # Limit to requested hours
-        cutoff_time = datetime.utcnow() + timedelta(hours=hours)
-        filtered_forecast = [
-            point for point in blended_forecast 
-            if point.timestamp <= cutoff_time
-        ]
+        # Use all forecast points for now (time filtering disabled)
+        filtered_forecast = blended_forecast[:hours] if hours < len(blended_forecast) else blended_forecast
         
         # Convert to response format
         forecast_points = [
@@ -122,7 +118,7 @@ async def get_source_status():
     }
 
 
-@router.get("/test/demo")
+@router.get("/demo/nyc")
 async def get_demo_forecast():
     """
     Get forecast for a demo location (New York City)

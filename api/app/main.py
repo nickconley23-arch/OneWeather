@@ -9,8 +9,8 @@ from contextlib import asynccontextmanager
 import logging
 
 from app.core.config import settings
-from app.core.database import engine, Base
-from app.routers import health, forecast, admin
+# from app.core.database import engine, Base  # Disabled for Phase 1
+from app.routers import health, forecast
 
 # Configure logging
 logging.basicConfig(
@@ -28,17 +28,17 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting OneWeather API")
     
-    # Create database tables (in development)
-    if settings.ENVIRONMENT == "development":
-        logger.info("Creating database tables...")
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
+    # Database initialization disabled for Phase 1
+    # if settings.ENVIRONMENT == "development":
+    #     logger.info("Creating database tables...")
+    #     async with engine.begin() as conn:
+    #         await conn.run_sync(Base.metadata.create_all)
     
     yield
     
     # Shutdown
     logger.info("Shutting down OneWeather API")
-    await engine.dispose()
+    # await engine.dispose()  # Disabled for Phase 1
 
 
 # Create FastAPI application
@@ -64,7 +64,6 @@ if settings.CORS_ORIGINS:
 # Include routers
 app.include_router(health.router, prefix="/health", tags=["health"])
 app.include_router(forecast.router, prefix="/api/v1/forecast", tags=["forecast"])
-# app.include_router(admin.router, prefix="/api/v1/admin", tags=["admin"])  # TODO: Implement admin endpoints
 
 
 @app.get("/")
