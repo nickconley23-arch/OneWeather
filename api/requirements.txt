@@ -5,6 +5,17 @@ python-multipart==0.0.6
 httpx==0.25.2
 pydantic-settings==2.1.0
 
+# Async HTTP
+aiohttp==3.9.1
+
+# Database
+asyncpg==0.29.0
+sqlalchemy==2.0.23
+psycopg2-binary==2.9.9
+
+# System
+psutil==5.9.6
+
 # Database
 asyncpg==0.29.0
 sqlalchemy==2.0.23
